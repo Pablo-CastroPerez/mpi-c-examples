@@ -1,0 +1,83 @@
+// Simple program to implement a broadcast using point-to-point communications.
+// It replicates the behaviour of the built in function MIP_Bcast
+
+#include <stdio.h>
+#include <mpi.h>
+
+void printarray(int rank, int *array, int n);
+
+int main(void)
+{
+  int i, src, dest, rank, size, root, tag;
+  MPI_Comm comm;
+  MPI_Status status;
+  
+  const int N = 12;
+
+  int x[N];
+
+  comm = MPI_COMM_WORLD;
+  root = 0;   // The process that contains the data to be broadcast
+
+  MPI_Init(NULL, NULL);
+
+  MPI_Comm_size(comm, &size);
+  MPI_Comm_rank(comm, &rank);
+
+  if (rank == 0)
+    {
+      printf("Running broadcast program on %d processes\n", size);
+    }
+
+ // Initialise the array
+  for (i=0; i<N; i++)
+    {
+      if (rank == root)
+	{
+	  x[i] = i;
+	}
+      else
+	{
+	  x[i] = -1;
+	}
+    }
+
+  printarray(rank, x, N);
+
+  tag = 0;
+
+  // Point-to-point broadcast 
+  if (rank == root)
+    {
+      for (dest=0; dest < size; dest++)
+	{
+	  if (dest != root)
+	    {
+	      MPI_Ssend(x, N, MPI_INT, dest, tag, comm);
+	    }
+	}
+    }
+  else
+    {
+      MPI_Recv(x, N, MPI_INT, root, tag, comm, &status);
+    }
+    
+  printarray(rank, x, N);
+
+  MPI_Finalize();
+
+  return 0;
+}  
+
+// Helper function that prints and array
+void printarray(int rank, int *array, int n)
+{
+  int i;
+  printf("On rank %d, array[] = [", rank);
+  for (i=0; i < n; i++)
+    {
+      if (i != 0) printf(",");
+      printf(" %d", array[i]);
+    }
+  printf(" ]\n");
+}
