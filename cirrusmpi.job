@@ -4,7 +4,7 @@
 # This only works for jobs *less than 20 minutes on 2 nodes or fewer*.                                                                                                                                          
 # For more nodes set "--qos=standard"                                                                                                                                                                           
 
-#SBATCH --job-name=automaton                                                                                                                                                                                        
+#SBATCH --job-name=<JOB_NAME>                                                                                                                                                                                    
 #SBATCH --time=00:00:20                                                                                                                                                                                         
 #SBATCH --nodes=<NUM_NODES>            # Number of nodes to request                                                                                                                                                                                            
 #SBATCH --ntasks=<NUM_TASKS>           # Total number of MPI tasks (max 36 × NUM_NODES)                                                                                                                                                  
